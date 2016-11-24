@@ -27,9 +27,6 @@
    /**启动IAP工具类*/
     [[IAPManager shared] startManager];
     
-    /**验证上次IAP交易是否完成*/
-    [[IAPManager shared] validationLastTrade];
-    
     return YES;
 }
 

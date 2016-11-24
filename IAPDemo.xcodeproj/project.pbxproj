@@ -333,9 +333,9 @@
 				GCC_PREFIX_HEADER = IAPDemo/Header.pch;
 				INFOPLIST_FILE = IAPDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.picovr.picovr.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.picovr.picovr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2b08e66f-c36a-4ae6-a679-ba540ecd6c75";
+				PROVISIONING_PROFILE = "61876736-bf90-4d61-955d-d6656ca3ed8a";
 			};
 			name = Debug;
 		};
@@ -347,9 +347,9 @@
 				GCC_PREFIX_HEADER = IAPDemo/Header.pch;
 				INFOPLIST_FILE = IAPDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.picovr.picovr.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.picovr.picovr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2b08e66f-c36a-4ae6-a679-ba540ecd6c75";
+				PROVISIONING_PROFILE = "61876736-bf90-4d61-955d-d6656ca3ed8a";
 			};
 			name = Release;
 		};
@@ -372,6 +372,7 @@
 				56423BD91DC718AC0001B856 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

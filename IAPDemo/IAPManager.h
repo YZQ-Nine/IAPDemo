@@ -68,9 +68,5 @@ singleton_interface(IAPManager)
  */
 - (void)requestProductWithId:(NSString *)productId;
 
-/**
- 将存储到本地的IAP文件发送给服务端 验证receipt失败,App启动后再次验证
- */
-- (void)validationLastTrade;
 
 @end

@@ -32,7 +32,24 @@ singleton_implementation(IAPManager)
 
     self.goodsRequestFinished = YES;
 
+    /***
+     内购支付两个阶段：
+     1.app直接向苹果服务器请求商品，支付阶段；
+     2.苹果服务器返回凭证，app向公司服务器发送验证，公司再向苹果服务器验证阶段；
+     */
+    
+    /**
+     阶段一正在进中,app退出。
+     在程序启动时，设置监听，监听是否有未完成订单，有的话恢复订单。
+     */
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    
+    /**
+     阶段二正在进行中,app退出。
+     在程序启动时，检测本地是否有receipt文件，有的话，去二次验证。
+     */
+    [self checkIAPFiles];
+
 }
 
 - (void)stopManager{
@@ -131,7 +148,7 @@ singleton_implementation(IAPManager)
                
                 [self saveReceipt]; //存储交易凭证
                
-                [self sendIAPFiles];//把self.receipt发送到服务器验证是否有效
+                [self checkIAPFiles];//把self.receipt发送到服务器验证是否有效
                 
                 [self completeTransaction:transaction];
                 
@@ -226,7 +243,7 @@ singleton_implementation(IAPManager)
 }
 
 #pragma mark 将存储到本地的IAP文件发送给服务端 验证receipt失败,App启动后再次验证
-- (void)sendIAPFiles{
+- (void)checkIAPFiles{
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -325,19 +342,5 @@ singleton_implementation(IAPManager)
         }
     }
 }
-
-#pragma mark 启动判断是否漏单
-- (void)validationLastTrade {
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    //从服务器验证receipt失败之后，在程序再次启动的时候，使用保存的receipt再次到服务器验证
-    if (![fileManager fileExistsAtPath:[SandBoxHelper iapReceiptPath]]) {//如果在该路下不存在文件，说明就没有保存验证失败后的购买凭证，也就是说发送凭证成功。
-
-    } else { //存在购买凭证，说明发送凭证失败，再次发起验证
-        
-        [self sendIAPFiles];
-    }
-}
-
 
 @end
