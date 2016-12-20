@@ -12,6 +12,16 @@ static NSString * const receiptKey = @"receipt_key";
 static NSString * const dateKey = @"date_key";
 static NSString * const userIdKey = @"userId_key";
 
+dispatch_queue_t iap_queue() {
+    static dispatch_queue_t as_iap_queue;
+    static dispatch_once_t onceToken_iap_queue;
+    dispatch_once(&onceToken_iap_queue, ^{
+        as_iap_queue = dispatch_queue_create("com.iap.queue", DISPATCH_QUEUE_CONCURRENT);
+    });
+    
+    return as_iap_queue;
+}
+
 @interface IAPManager ()<SKPaymentTransactionObserver, SKProductsRequestDelegate>
 
 @property (nonatomic, assign) BOOL goodsRequestFinished; //判断一次请求是否完成
@@ -30,31 +40,35 @@ singleton_implementation(IAPManager)
 
 - (void)startManager { //开启监听
 
-    self.goodsRequestFinished = YES;
-
-    /***
-     内购支付两个阶段：
-     1.app直接向苹果服务器请求商品，支付阶段；
-     2.苹果服务器返回凭证，app向公司服务器发送验证，公司再向苹果服务器验证阶段；
-     */
-    
-    /**
-     阶段一正在进中,app退出。
-     在程序启动时，设置监听，监听是否有未完成订单，有的话恢复订单。
-     */
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-    
-    /**
-     阶段二正在进行中,app退出。
-     在程序启动时，检测本地是否有receipt文件，有的话，去二次验证。
-     */
-    [self checkIAPFiles];
-
+    dispatch_async(iap_queue(), ^{
+       
+        self.goodsRequestFinished = YES;
+        
+        /***
+         内购支付两个阶段：
+         1.app直接向苹果服务器请求商品，支付阶段；
+         2.苹果服务器返回凭证，app向公司服务器发送验证，公司再向苹果服务器验证阶段；
+         */
+        
+        /**
+         阶段一正在进中,app退出。
+         在程序启动时，设置监听，监听是否有未完成订单，有的话恢复订单。
+         */
+        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        
+        /**
+         阶段二正在进行中,app退出。
+         在程序启动时，检测本地是否有receipt文件，有的话，去二次验证。
+         */
+        [self checkIAPFiles];
+    });
 }
 
 - (void)stopManager{
 
-    [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+    });
 }
 
 #pragma mark 查询
@@ -209,7 +223,7 @@ singleton_implementation(IAPManager)
 
 }
 
-#pragma mark 向服务器端验证购买凭证的有效性
+#pragma mark 获取交易成功后的购买凭证
 
 - (void)getReceipt {
 
@@ -229,7 +243,7 @@ singleton_implementation(IAPManager)
    
     self.userId = @"UserID";
    
-    NSString *savedPath = [NSString stringWithFormat:@"%@%@.plist", [SandBoxHelper iapReceiptPath], fileName];
+    NSString *savedPath = [NSString stringWithFormat:@"%@/%@.plist", [SandBoxHelper iapReceiptPath], fileName];
     
     NSDictionary *dic =[NSDictionary dictionaryWithObjectsAndKeys:
                         self.receipt,                           receiptKey,
