@@ -257,7 +257,7 @@ singleton_implementation(IAPManager)
 }
 
 #pragma mark 将存储到本地的IAP文件发送给服务端 验证receipt失败,App启动后再次验证
-- (void)checkIAPFiles{
+- (void)checkIAPFiles {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -284,7 +284,7 @@ singleton_implementation(IAPManager)
     }
 }
 
--(void)sendAppStoreRequestBuyPlist:(NSString *)plistPath {
+- (void)sendAppStoreRequestBuyPlist:(NSString *)plistPath {
 
     NSDictionary *dic = [NSDictionary dictionaryWithContentsOfFile:plistPath];
 
@@ -299,7 +299,7 @@ singleton_implementation(IAPManager)
     
     if(@"凭证有效"){
         
-        [self removeReceipt];
+        [self removeReceiptAtPath:plistPath];
     
     } else {//凭证无效
         
@@ -310,14 +310,14 @@ singleton_implementation(IAPManager)
 
 
 //验证成功就从plist中移除凭证
--(void)removeReceipt{
-   
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-   
-    if ([fileManager fileExistsAtPath:[SandBoxHelper iapReceiptPath]]) {
-        
-        [fileManager removeItemAtPath:[SandBoxHelper iapReceiptPath] error:nil];
+- (void)removeReceiptAtPath:(NSString *)filePath {
     
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if ( [fileManager fileExistsAtPath:filePath] ) {
+        
+        [fileManager removeItemAtPath:filePath error:nil];
+        
     }
 }
 
